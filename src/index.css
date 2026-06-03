@@ -1,0 +1,55 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply box-border;
+  }
+  body {
+    @apply bg-vluma-dark text-vluma-text font-sans antialiased;
+  }
+  :root {
+    --color-primary: #2ECC71;
+    --color-gold: #F39C12;
+    --color-card: #161B22;
+    --color-border: #30363D;
+    --color-text: #E6EDF3;
+    --color-muted: #8B949E;
+  }
+}
+
+@layer components {
+  .card {
+    @apply bg-vluma-card border border-vluma-border rounded-xl p-4;
+  }
+  .btn-primary {
+    @apply bg-vluma-green hover:bg-vluma-green-dark text-white font-medium px-4 py-2 rounded-lg transition-colors duration-200 flex items-center gap-2;
+  }
+  .btn-secondary {
+    @apply bg-vluma-card hover:bg-vluma-border text-vluma-text border border-vluma-border font-medium px-4 py-2 rounded-lg transition-colors duration-200 flex items-center gap-2;
+  }
+  .btn-danger {
+    @apply bg-vluma-red-light hover:bg-red-200 text-vluma-red font-medium px-4 py-2 rounded-lg transition-colors duration-200 flex items-center gap-2;
+  }
+  .input {
+    @apply bg-vluma-dark border border-vluma-border text-vluma-text placeholder-vluma-muted rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:border-vluma-green transition-colors;
+  }
+  .label {
+    @apply text-vluma-muted text-xs font-medium uppercase tracking-wider mb-1 block;
+  }
+  .pill-green {
+    @apply bg-vluma-green-light text-green-800 text-xs font-medium px-2 py-1 rounded-full;
+  }
+  .pill-amber {
+    @apply bg-vluma-gold-light text-yellow-800 text-xs font-medium px-2 py-1 rounded-full;
+  }
+  .pill-red {
+    @apply bg-vluma-red-light text-red-800 text-xs font-medium px-2 py-1 rounded-full;
+  }
+  .pill-blue {
+    @apply bg-blue-900 text-blue-200 text-xs font-medium px-2 py-1 rounded-full;
+  }
+}
