@@ -7,71 +7,81 @@ export type Plano = 'free' | 'starter' | 'pro' | 'enterprise'
 // ── STATUS ASSINATURA ──
 export type StatusAssinatura = 'trial' | 'ativo' | 'suspenso' | 'cancelado'
 
-// ── EMPRESA ──
-export interface Empresa {
-  id: string
-  nome: string
-  cnpj?: string
-  email: string
-  plano: Plano
-  status: StatusAssinatura
-  dominio_customizado?: string
-  modulos: ModulosAtivos
-  limites: LimitesEmpresa
-  created_at: string
-}
-
+// ── MÓDULOS ──
 export interface ModulosAtivos {
-  chamados: boolean
+  demandas: boolean
   projetos: boolean
   financeiro: boolean
   portal_cliente: boolean
   notificacoes: boolean
 }
 
+// ── LIMITES ──
 export interface LimitesEmpresa {
-  chamados_mes: number
+  demandas_mes: number
   projetos_ativos: number
   usuarios_projeto: number
+}
+
+// ── EMPRESA ──
+export interface Empresa {
+  id: string
+  nome: string
+  cnpj?: string
+  email: string
+  slug: string
+  plano: Plano
+  status: StatusAssinatura
+  dominio_customizado?: string
+  modulos: ModulosAtivos
+  limites: LimitesEmpresa
+  trial_expira_em?: string
+  created_at: string
+  updated_at: string
 }
 
 // ── USUÁRIO ──
 export interface Usuario {
   id: string
-  empresa_id: string
+  empresa_id?: string
   nome: string
   email: string
   perfil: Perfil
   avatar_url?: string
+  is_super_admin: boolean
   created_at: string
+  updated_at: string
 }
 
-// ── STATUS CHAMADO ──
-export type StatusChamado =
+// ── STATUS DEMANDA ──
+export type StatusDemanda =
   | 'Não Atendido'
   | 'Aguardando Aprovação de Orçamento'
   | 'Executado — Ag. Faturamento'
   | 'Faturar'
   | 'Faturado'
 
-// ── CHAMADO ──
-export interface Chamado {
+// ── PRIORIDADE ──
+export type Prioridade = 'baixa' | 'media' | 'alta' | 'critica'
+
+// ── DEMANDA ──
+export interface Demanda {
   id: string
   empresa_id: string
-  n_os?: string
-  loja?: string
-  problema?: string
+  titulo: string
+  descricao?: string
+  categoria?: string
+  prioridade: Prioridade
+  status: StatusDemanda
+  responsavel_id?: string
+  solicitante?: string
   data_abertura?: string
   data_atend?: string
-  acao?: string
-  responsavel?: string
-  status?: StatusChamado
-  data_orc?: string
-  itens_orc?: string
+  data_prazo_sla?: string
+  sla_violado?: boolean
   valor_orcado?: number
-  data_exec?: string
-  n_protocolo?: string
   valor_aprovado?: number
+  n_protocolo?: string
   observacoes?: string
   created_at: string
   updated_at: string
