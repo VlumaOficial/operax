@@ -18,8 +18,8 @@ const navItems: NavItem[] = [
   { label: "Dashboard", icon: <LayoutDashboard size={18} />, path: "/" },
   { label: "Demandas", icon: <Ticket size={18} />, path: "/demandas" },
   { label: "Projetos", icon: <FolderKanban size={18} />, path: "/projetos" },
-  { label: "Relatorios", icon: <BarChart3 size={18} />, path: "/relatorios" },
-  { label: "Configuracoes", icon: <Settings size={18} />, path: "/configuracoes" },
+  { label: "Relatórios", icon: <BarChart3 size={18} />, path: "/relatorios" },
+  { label: "Configurações", icon: <Settings size={18} />, path: "/configuracoes" },
   { label: "Super Admin", icon: <Shield size={18} />, path: "/super-admin", superAdminOnly: true },
 ]
 
@@ -142,7 +142,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </button>
           </div>
         </header>
-        <main className="flex-1 overflow-y-auto p-6">
+        <main className="flex-1 overflow-y-auto p-6" style={{ background: "linear-gradient(135deg, #0D1117 0%, #0a0f0a 100%)" }}>
           {children}
         </main>
       </div>
