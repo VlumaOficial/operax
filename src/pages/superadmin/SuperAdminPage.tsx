@@ -2,7 +2,7 @@ import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import { useAuth } from "../../contexts/AuthContext"
 import { supabase } from "../../lib/supabase"
-import { Shield, Building2, CreditCard, BarChart3, Pencil, Power, Plus, Search } from "lucide-react"
+import { Shield, Building2, CreditCard, BarChart3, Pencil, Power, Plus, Search, X, Check, AlertTriangle } from "lucide-react"
 
 type TabType = "empresas" | "planos" | "metricas"
 
@@ -10,10 +10,32 @@ interface Empresa {
   id: string
   nome: string
   email: string
+  slug?: string
+  cnpj?: string
   plano: string
   status: string
   modulos_ativos: string[]
+  limites?: {
+    demandas_mes?: number
+    projetos_ativos?: number
+    usuarios_por_projeto?: number
+  }
   created_at: string
+}
+
+interface EmpresaFormData {
+  nome: string
+  email: string
+  slug: string
+  cnpj: string
+  plano: string
+  status: string
+  modulos_ativos: string[]
+  limites: {
+    demandas_mes: number
+    projetos_ativos: number
+    usuarios_por_projeto: number
+  }
 }
 
 export default function SuperAdminPage() {
@@ -23,6 +45,25 @@ export default function SuperAdminPage() {
   const [empresas, setEmpresas] = useState<Empresa[]>([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState("")
+  const [modalOpen, setModalOpen] = useState(false)
+  const [editingEmpresa, setEditingEmpresa] = useState<Empresa | null>(null)
+  const [formData, setFormData] = useState<EmpresaFormData>({
+    nome: "",
+    email: "",
+    slug: "",
+    cnpj: "",
+    plano: "free",
+    status: "trial",
+    modulos_ativos: [],
+    limites: {
+      demandas_mes: 10,
+      projetos_ativos: 3,
+      usuarios_por_projeto: 5
+    }
+  })
+  const [saving, setSaving] = useState(false)
+  const [feedback, setFeedback] = useState<{ type: 'success' | 'error', message: string } | null>(null)
+  const [confirmAction, setConfirmAction] = useState<{ empresa: Empresa, action: 'suspend' | 'activate' } | null>(null)
 
   useEffect(() => {
     if (!isSuperAdmin) {
@@ -73,6 +114,156 @@ export default function SuperAdminPage() {
     empresa.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
     empresa.email.toLowerCase().includes(searchTerm.toLowerCase())
   )
+
+  function generateSlug(nome: string) {
+    return nome
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-|-$/g, '')
+  }
+
+  function openModal(empresa?: Empresa) {
+    if (empresa) {
+      setEditingEmpresa(empresa)
+      setFormData({
+        nome: empresa.nome,
+        email: empresa.email,
+        slug: empresa.slug || generateSlug(empresa.nome),
+        cnpj: empresa.cnpj || "",
+        plano: empresa.plano,
+        status: empresa.status,
+        modulos_ativos: empresa.modulos_ativos || [],
+        limites: empresa.limites || {
+          demandas_mes: 10,
+          projetos_ativos: 3,
+          usuarios_por_projeto: 5
+        }
+      })
+    } else {
+      setEditingEmpresa(null)
+      setFormData({
+        nome: "",
+        email: "",
+        slug: "",
+        cnpj: "",
+        plano: "free",
+        status: "trial",
+        modulos_ativos: [],
+        limites: {
+          demandas_mes: 10,
+          projetos_ativos: 3,
+          usuarios_por_projeto: 5
+        }
+      })
+    }
+    setModalOpen(true)
+  }
+
+  function closeModal() {
+    setModalOpen(false)
+    setEditingEmpresa(null)
+    setFeedback(null)
+  }
+
+  function handleNomeChange(nome: string) {
+    setFormData({
+      ...formData,
+      nome,
+      slug: generateSlug(nome)
+    })
+  }
+
+  function toggleModulo(modulo: string) {
+    setFormData({
+      ...formData,
+      modulos_ativos: formData.modulos_ativos.includes(modulo)
+        ? formData.modulos_ativos.filter(m => m !== modulo)
+        : [...formData.modulos_ativos, modulo]
+    })
+  }
+
+  async function saveEmpresa() {
+    if (!formData.nome || !formData.email || !formData.slug) {
+      setFeedback({ type: 'error', message: 'Preencha os campos obrigatórios' })
+      return
+    }
+
+    setSaving(true)
+    try {
+      if (editingEmpresa) {
+        const { error } = await supabase
+          .from('empresas')
+          .update({
+            nome: formData.nome,
+            email: formData.email,
+            slug: formData.slug,
+            cnpj: formData.cnpj || null,
+            plano: formData.plano,
+            status: formData.status,
+            modulos_ativos: formData.modulos_ativos,
+            limites: formData.limites
+          })
+          .eq('id', editingEmpresa.id)
+
+        if (error) throw error
+        setFeedback({ type: 'success', message: 'Empresa atualizada com sucesso' })
+      } else {
+        const { error } = await supabase
+          .from('empresas')
+          .insert({
+            nome: formData.nome,
+            email: formData.email,
+            slug: formData.slug,
+            cnpj: formData.cnpj || null,
+            plano: formData.plano,
+            status: formData.status,
+            modulos_ativos: formData.modulos_ativos,
+            limites: formData.limites
+          })
+
+        if (error) throw error
+        setFeedback({ type: 'success', message: 'Empresa criada com sucesso' })
+      }
+
+      await loadEmpresas()
+      setTimeout(closeModal, 1500)
+    } catch (error) {
+      console.error('Erro ao salvar empresa:', error)
+      setFeedback({ type: 'error', message: 'Erro ao salvar empresa' })
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  function toggleEmpresaStatus(empresa: Empresa) {
+    const newStatus = empresa.status === 'ativo' ? 'suspenso' : 'ativo'
+    setConfirmAction({ empresa, action: newStatus === 'suspenso' ? 'suspend' : 'activate' })
+  }
+
+  async function confirmToggleStatus() {
+    if (!confirmAction) return
+
+    const { empresa, action } = confirmAction
+    const newStatus = action === 'suspend' ? 'suspenso' : 'ativo'
+
+    try {
+      const { error } = await supabase
+        .from('empresas')
+        .update({ status: newStatus })
+        .eq('id', empresa.id)
+
+      if (error) throw error
+      await loadEmpresas()
+      setFeedback({ type: 'success', message: `Empresa ${newStatus === 'suspenso' ? 'suspensa' : 'ativada'} com sucesso` })
+    } catch (error) {
+      console.error('Erro ao alterar status:', error)
+      setFeedback({ type: 'error', message: 'Erro ao alterar status' })
+    } finally {
+      setConfirmAction(null)
+    }
+  }
 
   return (
     <div className="p-8">
@@ -137,7 +328,7 @@ export default function SuperAdminPage() {
                 className="input pl-10 w-64"
               />
             </div>
-            <button className="btn-primary">
+            <button onClick={() => openModal()} className="btn-primary">
               <Plus size={16} />
               Nova Empresa
             </button>
@@ -192,10 +383,10 @@ export default function SuperAdminPage() {
                       </td>
                       <td className="px-4 py-3 text-right">
                         <div className="flex items-center justify-end gap-2">
-                          <button className="text-vluma-muted hover:text-vluma-green transition-colors p-1.5 rounded-lg hover:bg-white/5" title="Editar">
+                          <button onClick={() => openModal(empresa)} className="text-vluma-muted hover:text-vluma-green transition-colors p-1.5 rounded-lg hover:bg-white/5" title="Editar">
                             <Pencil size={16} />
                           </button>
-                          <button className="text-vluma-muted hover:text-vluma-green transition-colors p-1.5 rounded-lg hover:bg-white/5" title="Suspender/Ativar">
+                          <button onClick={() => toggleEmpresaStatus(empresa)} className="text-vluma-muted hover:text-vluma-green transition-colors p-1.5 rounded-lg hover:bg-white/5" title="Suspender/Ativar">
                             <Power size={16} />
                           </button>
                         </div>
@@ -222,6 +413,201 @@ export default function SuperAdminPage() {
           <BarChart3 className="text-vluma-muted mb-4" size={48} />
           <p className="text-vluma-muted mb-2">Em desenvolvimento</p>
           <p className="text-vluma-muted text-sm">Métricas e analytics em breve</p>
+        </div>
+      )}
+
+      {/* MODAL NOVA/EDITAR EMPRESA */}
+      {modalOpen && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="card w-full max-w-2xl max-h-[90vh] overflow-y-auto animate-fade-in">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-vluma-text text-xl font-bold">
+                {editingEmpresa ? 'Editar Empresa' : 'Nova Empresa'}
+              </h2>
+              <button onClick={closeModal} className="text-vluma-muted hover:text-vluma-text transition-colors p-1 rounded-lg hover:bg-white/5">
+                <X size={20} />
+              </button>
+            </div>
+
+            {feedback && (
+              <div className={`mb-4 p-3 rounded-lg flex items-center gap-2 ${
+                feedback.type === 'success' ? 'bg-green-900/30 text-green-400' : 'bg-red-900/30 text-red-400'
+              }`}>
+                {feedback.type === 'success' ? <Check size={16} /> : <AlertTriangle size={16} />}
+                {feedback.message}
+              </div>
+            )}
+
+            <div className="space-y-4">
+              <div>
+                <label className="label">Nome da empresa *</label>
+                <input
+                  type="text"
+                  value={formData.nome}
+                  onChange={(e) => handleNomeChange(e.target.value)}
+                  className="input"
+                  placeholder="Nome da empresa"
+                />
+              </div>
+
+              <div>
+                <label className="label">Email *</label>
+                <input
+                  type="email"
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  className="input"
+                  placeholder="email@empresa.com"
+                />
+              </div>
+
+              <div>
+                <label className="label">Slug *</label>
+                <input
+                  type="text"
+                  value={formData.slug}
+                  onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
+                  className="input"
+                  placeholder="slug-da-empresa"
+                />
+              </div>
+
+              <div>
+                <label className="label">CNPJ</label>
+                <input
+                  type="text"
+                  value={formData.cnpj}
+                  onChange={(e) => setFormData({ ...formData, cnpj: e.target.value })}
+                  className="input"
+                  placeholder="00.000.000/0000-00"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="label">Plano</label>
+                  <select
+                    value={formData.plano}
+                    onChange={(e) => setFormData({ ...formData, plano: e.target.value })}
+                    className="input"
+                  >
+                    <option value="free">Free</option>
+                    <option value="starter">Starter</option>
+                    <option value="pro">Pro</option>
+                    <option value="enterprise">Enterprise</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="label">Status</label>
+                  <select
+                    value={formData.status}
+                    onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                    className="input"
+                  >
+                    <option value="trial">Trial</option>
+                    <option value="ativo">Ativo</option>
+                    <option value="suspenso">Suspenso</option>
+                    <option value="cancelado">Cancelado</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="label">Módulos ativos</label>
+                <div className="grid grid-cols-2 gap-2">
+                  {['Demandas', 'Projetos', 'Financeiro', 'Portal Cliente', 'Notificações'].map((modulo) => (
+                    <label key={modulo} className="flex items-center gap-2 p-2 rounded-lg hover:bg-white/5 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={formData.modulos_ativos.includes(modulo)}
+                        onChange={() => toggleModulo(modulo)}
+                        className="w-4 h-4 rounded border-vluma-border bg-transparent text-vluma-green focus:ring-vluma-green"
+                      />
+                      <span className="text-vluma-text text-sm">{modulo}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <label className="label">Limites</label>
+                <div className="grid grid-cols-3 gap-4">
+                  <div>
+                    <label className="label text-xs">Demandas/mês</label>
+                    <input
+                      type="number"
+                      value={formData.limites.demandas_mes}
+                      onChange={(e) => setFormData({
+                        ...formData,
+                        limites: { ...formData.limites, demandas_mes: parseInt(e.target.value) || 0 }
+                      })}
+                      className="input"
+                      placeholder="-1 = ilimitado"
+                    />
+                  </div>
+                  <div>
+                    <label className="label text-xs">Projetos ativos</label>
+                    <input
+                      type="number"
+                      value={formData.limites.projetos_ativos}
+                      onChange={(e) => setFormData({
+                        ...formData,
+                        limites: { ...formData.limites, projetos_ativos: parseInt(e.target.value) || 0 }
+                      })}
+                      className="input"
+                      placeholder="-1 = ilimitado"
+                    />
+                  </div>
+                  <div>
+                    <label className="label text-xs">Usuários/projeto</label>
+                    <input
+                      type="number"
+                      value={formData.limites.usuarios_por_projeto}
+                      onChange={(e) => setFormData({
+                        ...formData,
+                        limites: { ...formData.limites, usuarios_por_projeto: parseInt(e.target.value) || 0 }
+                      })}
+                      className="input"
+                      placeholder="-1 = ilimitado"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-2 mt-6">
+              <button onClick={closeModal} className="btn-secondary" disabled={saving}>
+                Cancelar
+              </button>
+              <button onClick={saveEmpresa} className="btn-primary" disabled={saving}>
+                {saving ? 'Salvando...' : (editingEmpresa ? 'Salvar' : 'Criar Empresa')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* CONFIRMATION MODAL */}
+      {confirmAction && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="card w-full max-w-md animate-fade-in">
+            <div className="flex items-center gap-3 mb-4">
+              <AlertTriangle className="text-vluma-gold" size={24} />
+              <h3 className="text-vluma-text text-lg font-bold">Confirmar ação</h3>
+            </div>
+            <p className="text-vluma-muted mb-6">
+              Tem certeza que deseja {confirmAction.action === 'suspend' ? 'suspender' : 'ativar'} a empresa "{confirmAction.empresa.nome}"?
+            </p>
+            <div className="flex justify-end gap-2">
+              <button onClick={() => setConfirmAction(null)} className="btn-secondary">
+                Cancelar
+              </button>
+              <button onClick={confirmToggleStatus} className="btn-primary">
+                Confirmar
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>
