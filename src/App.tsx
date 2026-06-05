@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
+import Layout from './components/layout/Layout'
 
 // Pages
 import Login from './pages/auth/Login'
@@ -17,7 +18,7 @@ function PrivateRoute({ children }: { children: React.ReactNode }) {
       </div>
     </div>
   )
-  return session ? <>{children}</> : <Navigate to="/login" replace />
+  return session ? <Layout>{children}</Layout> : <Navigate to="/login" replace />
 }
 
 function SuperAdminRoute({ children }: { children: React.ReactNode }) {
@@ -37,6 +38,8 @@ function AppRoutes() {
       <Route path="/" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
       <Route path="/demandas" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
       <Route path="/projetos" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
+      <Route path="/relatorios" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
+      <Route path="/configuracoes" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
 
       {/* Super Admin */}
       <Route path="/super-admin" element={
