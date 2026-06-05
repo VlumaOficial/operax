@@ -8,6 +8,7 @@ export default function Login() {
   const [erro, setErro] = useState('')
 
   async function handleLogin(e: React.FormEvent) {
+    console.log("handleLogin chamado", email)
     e.preventDefault()
     setLoading(true)
     setErro('')
