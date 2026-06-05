@@ -14,11 +14,17 @@ interface Empresa {
   cnpj?: string
   plano: string
   status: string
-  modulos_ativos: string[]
+  modulos: {
+    demandas: boolean
+    projetos: boolean
+    financeiro: boolean
+    portal_cliente: boolean
+    notificacoes: boolean
+  }
   limites: {
     demandas_mes: number
     projetos_ativos: number
-    usuarios_por_projeto: number
+    usuarios_projeto: number
   }
   created_at: string
 }
@@ -30,11 +36,17 @@ interface EmpresaFormData {
   cnpj: string
   plano: string
   status: string
-  modulos_ativos: string[]
+  modulos: {
+    demandas: boolean
+    projetos: boolean
+    financeiro: boolean
+    portal_cliente: boolean
+    notificacoes: boolean
+  }
   limites: {
     demandas_mes: number
     projetos_ativos: number
-    usuarios_por_projeto: number
+    usuarios_projeto: number
   }
 }
 
@@ -54,11 +66,17 @@ export default function SuperAdminPage() {
     cnpj: "",
     plano: "free",
     status: "trial",
-    modulos_ativos: [],
+    modulos: {
+      demandas: false,
+      projetos: false,
+      financeiro: false,
+      portal_cliente: false,
+      notificacoes: false
+    },
     limites: {
       demandas_mes: 10,
       projetos_ativos: 3,
-      usuarios_por_projeto: 5
+      usuarios_projeto: 5
     }
   })
   const [saving, setSaving] = useState(false)
@@ -134,11 +152,17 @@ export default function SuperAdminPage() {
         cnpj: empresa.cnpj || "",
         plano: empresa.plano,
         status: empresa.status,
-        modulos_ativos: empresa.modulos_ativos || [],
+        modulos: empresa.modulos || {
+          demandas: false,
+          projetos: false,
+          financeiro: false,
+          portal_cliente: false,
+          notificacoes: false
+        },
         limites: empresa.limites || {
           demandas_mes: 10,
           projetos_ativos: 3,
-          usuarios_por_projeto: 5
+          usuarios_projeto: 5
         }
       })
     } else {
@@ -150,11 +174,17 @@ export default function SuperAdminPage() {
         cnpj: "",
         plano: "free",
         status: "trial",
-        modulos_ativos: [],
+        modulos: {
+          demandas: false,
+          projetos: false,
+          financeiro: false,
+          portal_cliente: false,
+          notificacoes: false
+        },
         limites: {
           demandas_mes: 10,
           projetos_ativos: 3,
-          usuarios_por_projeto: 5
+          usuarios_projeto: 5
         }
       })
     }
@@ -175,12 +205,13 @@ export default function SuperAdminPage() {
     })
   }
 
-  function toggleModulo(modulo: string) {
+  function toggleModulo(modulo: keyof EmpresaFormData['modulos']) {
     setFormData({
       ...formData,
-      modulos_ativos: formData.modulos_ativos.includes(modulo)
-        ? formData.modulos_ativos.filter(m => m !== modulo)
-        : [...formData.modulos_ativos, modulo]
+      modulos: {
+        ...formData.modulos,
+        [modulo]: !formData.modulos[modulo]
+      }
     })
   }
 
@@ -202,7 +233,7 @@ export default function SuperAdminPage() {
             cnpj: formData.cnpj || null,
             plano: formData.plano,
             status: formData.status,
-            modulos_ativos: formData.modulos_ativos,
+            modulos: formData.modulos,
             limites: formData.limites
           })
           .eq('id', editingEmpresa.id)
@@ -219,7 +250,7 @@ export default function SuperAdminPage() {
             cnpj: formData.cnpj || null,
             plano: formData.plano,
             status: formData.status,
-            modulos_ativos: formData.modulos_ativos,
+            modulos: formData.modulos,
             limites: formData.limites
           })
 
@@ -371,8 +402,8 @@ export default function SuperAdminPage() {
                       <td className="px-4 py-3">{getStatusPill(empresa.status)}</td>
                       <td className="px-4 py-3">
                         <div className="flex gap-1 flex-wrap">
-                          {Array.isArray(empresa.modulos_ativos) && empresa.modulos_ativos.map((modulo, idx) => (
-                            <span key={idx} className="text-xs text-vluma-muted bg-white/5 px-2 py-0.5 rounded">{modulo}</span>
+                          {Object.entries(empresa.modulos || {}).filter(([_, active]) => active).map(([modulo, _]) => (
+                            <span key={modulo} className="text-xs text-vluma-muted bg-white/5 px-2 py-0.5 rounded">{modulo}</span>
                           ))}
                         </div>
                       </td>
@@ -516,15 +547,15 @@ export default function SuperAdminPage() {
               <div>
                 <label className="label">Módulos ativos</label>
                 <div className="grid grid-cols-2 gap-2">
-                  {['Demandas', 'Projetos', 'Financeiro', 'Portal Cliente', 'Notificações'].map((modulo) => (
-                    <label key={modulo} className="flex items-center gap-2 p-2 rounded-lg hover:bg-white/5 cursor-pointer">
+                  {Object.entries(formData.modulos).map(([key, value]) => (
+                    <label key={key} className="flex items-center gap-2 p-2 rounded-lg hover:bg-white/5 cursor-pointer">
                       <input
                         type="checkbox"
-                        checked={formData.modulos_ativos.includes(modulo)}
-                        onChange={() => toggleModulo(modulo)}
+                        checked={value}
+                        onChange={() => toggleModulo(key as keyof EmpresaFormData['modulos'])}
                         className="w-4 h-4 rounded border-vluma-border bg-transparent text-vluma-green focus:ring-vluma-green"
                       />
-                      <span className="text-vluma-text text-sm">{modulo}</span>
+                      <span className="text-vluma-text text-sm">{key.charAt(0).toUpperCase() + key.slice(1).replace('_', ' ')}</span>
                     </label>
                   ))}
                 </div>
@@ -563,10 +594,10 @@ export default function SuperAdminPage() {
                     <label className="label text-xs">Usuários/projeto</label>
                     <input
                       type="number"
-                      value={formData.limites.usuarios_por_projeto}
+                      value={formData.limites.usuarios_projeto}
                       onChange={(e) => setFormData({
                         ...formData,
-                        limites: { ...formData.limites, usuarios_por_projeto: parseInt(e.target.value) || 0 }
+                        limites: { ...formData.limites, usuarios_projeto: parseInt(e.target.value) || 0 }
                       })}
                       className="input"
                       placeholder="-1 = ilimitado"
