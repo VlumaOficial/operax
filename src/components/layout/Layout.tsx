@@ -142,7 +142,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </button>
           </div>
         </header>
-        <main className="flex-1 overflow-y-auto p-6" style={{ background: "linear-gradient(135deg, #0D1117 0%, #0a0f0a 100%)" }}>
+        <main className="flex-1 overflow-y-auto p-6" style={{ background: "radial-gradient(ellipse at 30% 20%, #0d1f0d 0%, #0D1117 50%, #080d12 100%)" }}>
           {children}
         </main>
       </div>
