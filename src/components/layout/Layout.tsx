@@ -127,7 +127,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </button>
           </div>
         </header>
-        <main className="flex-1 overflow-y-auto p-6">
+        <main className="flex-1 overflow-y-auto p-6" style={{ background: "rgba(9,24,42,0.85)" }}>
           {children}
         </main>
       </div>
