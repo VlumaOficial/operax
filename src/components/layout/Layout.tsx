@@ -118,7 +118,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         </div>
       </aside>
 
-        <header className="h-14 border-b flex items-center justify-between px-4 flex-shrink-0" style={{ borderColor: "rgba(255,255,255,0.07)", background: "rgba(6,16,28,0.8)" }}>
         <header className="h-14 border-b" style={{ borderColor: "rgba(255,255,255,0.07)", background: "rgba(6,16,28,0.8)" }} flex items-center justify-between px-4 flex-shrink-0">
           <div className="flex items-center gap-3">
             {collapsed && (
