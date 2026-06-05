@@ -59,13 +59,16 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               <div key={item.path} className="relative group">
                 <Link
                   to={item.path}
-                  className={["flex items-center gap-3 px-2.5 py-2.5 rounded-lg transition-all duration-150", collapsed ? "justify-center" : "", isActive ? "bg-vluma-green text-white font-medium" : "text-vluma-muted hover:text-vluma-text hover:bg-white/5"].join(" ")}
+                  className={["flex items-center gap-3 px-2.5 py-2.5 rounded-lg transition-all duration-200 ease-in-out relative", collapsed ? "justify-center" : "", isActive ? "bg-vluma-green text-white font-medium shadow-lg shadow-green-900/20" : "text-vluma-muted hover:text-vluma-text hover:bg-white/5"].join(" ")}
                 >
+                  {isActive && (
+                    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-white rounded-r-full" style={{ boxShadow: "0 0 8px rgba(255,255,255,0.5)" }}></div>
+                  )}
                   <span className="flex-shrink-0">{item.icon}</span>
                   {!collapsed && <span className="text-sm">{item.label}</span>}
                 </Link>
                 {collapsed && (
-                  <div className="absolute left-full top-1/2 -translate-y-1/2 ml-3 px-2.5 py-1.5 rounded-lg text-vluma-text text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50" style={{ background: "rgba(12,28,46,0.95)", border: "1px solid rgba(255,255,255,0.07)" }}>
+                  <div className="absolute left-full top-1/2 -translate-y-1/2 ml-3 px-3 py-1.5 rounded-lg text-vluma-text text-xs font-medium whitespace-nowrap opacity-0 group-hover:opacity-100 transition-all duration-200 pointer-events-none z-50" style={{ background: "rgba(12,28,46,0.95)", border: "1px solid rgba(255,255,255,0.07)", boxShadow: "0 4px 12px rgba(0,0,0,0.3)" }}>
                     {item.label}
                   </div>
                 )}
@@ -128,7 +131,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           </div>
         </header>
         <main className="flex-1 overflow-y-auto p-6">
-          {children}
+          <div className="animate-fade-in">
+            {children}
+          </div>
         </main>
       </div>
     </div>
