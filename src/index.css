@@ -9,6 +9,7 @@
     @apply box-border;
   }
   body {
+    background: radial-gradient(ellipse at 70% 10%, #0d2a0d 0%, #0D1117 60%) fixed;
     @apply bg-vluma-dark text-vluma-text font-sans antialiased;
   }
   :root {
