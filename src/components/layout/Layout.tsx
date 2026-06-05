@@ -104,7 +104,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       </aside>
 
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden" style={{ background: "rgba(9,24,42,0.85)" }}>
-        <header className="h-14 flex items-center justify-between px-4 flex-shrink-0" style={{ background: "rgba(6,16,28,0.8)", borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
+        <header className="h-14 flex items-center justify-between px-4 flex-shrink-0" style={{ borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
           <div className="flex items-center gap-3">
             {collapsed && (
               <button onClick={() => setCollapsed(false)} className="text-vluma-muted hover:text-vluma-green transition-colors p-1.5 rounded-lg hover:bg-white/5" title="Expandir">
