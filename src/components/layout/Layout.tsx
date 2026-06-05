@@ -37,7 +37,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const filteredNav = navItems.filter(item => !item.superAdminOnly || isSuperAdmin)
 
   return (
-    <div className="flex h-screen bg-vluma-dark overflow-hidden">
+    <div className="flex h-screen overflow-hidden" style={{ background: "radial-gradient(ellipse at 60% 0%, #0d1f0d 0%, #0D1117 45%, #080d12 100%)" }}>
       <aside
         className={["flex flex-col border-r border-vluma-border transition-all duration-300 flex-shrink-0 overflow-hidden", collapsed ? "w-[56px]" : "w-56"].join(" ")}
         style={{ background: "linear-gradient(180deg, #1a2e1a 0%, #161B22 40%, #111820 100%)" }}
