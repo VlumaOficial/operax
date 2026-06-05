@@ -15,10 +15,10 @@ interface Empresa {
   plano: string
   status: string
   modulos_ativos: string[]
-  limites?: {
-    demandas_mes?: number
-    projetos_ativos?: number
-    usuarios_por_projeto?: number
+  limites: {
+    demandas_mes: number
+    projetos_ativos: number
+    usuarios_por_projeto: number
   }
   created_at: string
 }
