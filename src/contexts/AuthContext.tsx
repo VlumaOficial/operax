@@ -54,6 +54,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [])
 
   async function carregarPerfil(userId: string) {
+    console.log("carregarPerfil chamado", userId)
     try {
       const { data: u } = await supabase
         .from('usuarios')
