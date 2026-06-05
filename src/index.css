@@ -1,17 +1,16 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
-  * {
-    @apply box-border;
+  * { @apply box-border; }
+  html, body, #root {
+    min-height: 100vh;
+    background-color: #0f1f0f;
   }
   body {
-    background: radial-gradient(ellipse at 70% 10%, #0d2a0d 0%, #0D1117 60%) fixed;
     @apply text-vluma-text font-sans antialiased;
-    
   }
   :root {
     --color-primary: #2ECC71;
@@ -25,7 +24,8 @@
 
 @layer components {
   .card {
-    @apply bg-vluma-card border border-vluma-border rounded-xl p-4;
+    @apply bg-vluma-card rounded-xl p-4;
+    border: 1px solid #30363D;
   }
   .btn-primary {
     @apply bg-vluma-green hover:bg-vluma-green-dark text-white font-medium px-4 py-2 rounded-lg transition-colors duration-200 flex items-center gap-2;
@@ -42,22 +42,8 @@
   .label {
     @apply text-vluma-muted text-xs font-medium uppercase tracking-wider mb-1 block;
   }
-  .pill-green {
-    @apply bg-vluma-green-light text-green-800 text-xs font-medium px-2 py-1 rounded-full;
-  }
-  .pill-amber {
-    @apply bg-vluma-gold-light text-yellow-800 text-xs font-medium px-2 py-1 rounded-full;
-  }
-  .pill-red {
-    @apply bg-vluma-red-light text-red-800 text-xs font-medium px-2 py-1 rounded-full;
-  }
-  .pill-blue {
-    @apply bg-blue-900 text-blue-200 text-xs font-medium px-2 py-1 rounded-full;
-  }
-}
-
-
-html, body, #root {
-  min-height: 100vh;
-  background-color: #0f1f0f;
+  .pill-green { @apply bg-vluma-green-light text-green-800 text-xs font-medium px-2 py-1 rounded-full; }
+  .pill-amber { @apply bg-vluma-gold-light text-yellow-800 text-xs font-medium px-2 py-1 rounded-full; }
+  .pill-red   { @apply bg-vluma-red-light text-red-800 text-xs font-medium px-2 py-1 rounded-full; }
+  .pill-blue  { @apply bg-blue-900 text-blue-200 text-xs font-medium px-2 py-1 rounded-full; }
 }
