@@ -5,39 +5,53 @@
 
 @layer base {
   * { @apply box-border; }
+
   html, body, #root {
     min-height: 100vh;
-    background-color: #0f1f0f;
+    background-color: #06101C;
   }
+
   body {
     @apply text-vluma-text font-sans antialiased;
+    background:
+      radial-gradient(ellipse 50% 45% at 12% 88%, rgba(29,158,117,0.11) 0%, transparent 60%),
+      radial-gradient(ellipse 45% 40% at 90% 10%, rgba(26,95,212,0.10) 0%, transparent 60%),
+      radial-gradient(ellipse 75% 65% at 50% 48%, #0F2440 0%, #09182A 40%, #050E1A 100%);
+    background-attachment: fixed;
   }
+
   :root {
     --color-primary: #2ECC71;
     --color-gold: #F39C12;
-    --color-card: #161B22;
-    --color-border: #30363D;
-    --color-text: #E6EDF3;
-    --color-muted: #8B949E;
+    --color-card: #0C1C2E;
+    --color-border: rgba(255,255,255,0.07);
+    --color-text: #EBF2FF;
+    --color-muted: #6B8EAA;
   }
 }
 
 @layer components {
   .card {
-    @apply bg-vluma-card rounded-xl p-4;
-    border: 1px solid #30363D;
+    background: rgba(12, 28, 46, 0.65);
+    border: 1px solid rgba(255,255,255,0.07);
+    backdrop-filter: blur(6px);
+    @apply rounded-xl p-4;
   }
   .btn-primary {
     @apply bg-vluma-green hover:bg-vluma-green-dark text-white font-medium px-4 py-2 rounded-lg transition-colors duration-200 flex items-center gap-2;
   }
   .btn-secondary {
-    @apply bg-vluma-card hover:bg-vluma-border text-vluma-text border border-vluma-border font-medium px-4 py-2 rounded-lg transition-colors duration-200 flex items-center gap-2;
+    @apply hover:bg-vluma-border text-vluma-text border font-medium px-4 py-2 rounded-lg transition-colors duration-200 flex items-center gap-2;
+    border-color: rgba(255,255,255,0.07);
+    background: rgba(12,28,46,0.5);
   }
   .btn-danger {
     @apply bg-vluma-red-light hover:bg-red-200 text-vluma-red font-medium px-4 py-2 rounded-lg transition-colors duration-200 flex items-center gap-2;
   }
   .input {
-    @apply bg-vluma-dark border border-vluma-border text-vluma-text placeholder-vluma-muted rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:border-vluma-green transition-colors;
+    @apply border text-vluma-text placeholder-vluma-muted rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:border-vluma-green transition-colors;
+    background: rgba(6,16,28,0.8);
+    border-color: rgba(255,255,255,0.07);
   }
   .label {
     @apply text-vluma-muted text-xs font-medium uppercase tracking-wider mb-1 block;

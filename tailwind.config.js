@@ -9,18 +9,19 @@ export default {
     extend: {
       colors: {
         vluma: {
-          dark:    '#0D1117',
-          card:    '#161B22',
-          border:  '#30363D',
-          green:   '#2ECC71',
-          'green-dark': '#27AE60',
-          'green-light': '#E8F8F0',
-          gold:    '#F39C12',
-          'gold-light': '#FEF9E7',
-          red:     '#E74C3C',
+          dark:        '#06101C',
+          navy:        '#0C1C2E',
+          card:        '#0C1C2E',
+          border:      'rgba(255,255,255,0.07)',
+          green:       '#1D9E75',
+          'green-dark':'#168A64',
+          'green-light':'#E1F5EE',
+          gold:        '#F39C12',
+          'gold-light':'#FEF9E7',
+          red:         '#E74C3C',
           'red-light': '#FDEDEC',
-          text:    '#E6EDF3',
-          muted:   '#8B949E',
+          text:        '#EBF2FF',
+          muted:       '#6B8EAA',
         }
       },
       fontFamily: {

@@ -40,7 +40,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     <div className="flex h-screen overflow-hidden" >
       <aside
         className={["flex flex-col border-r border-vluma-border transition-all duration-300 flex-shrink-0 overflow-hidden", collapsed ? "w-[56px]" : "w-56"].join(" ")}
-        style={{ background: "linear-gradient(180deg, #1a2e1a 0%, #161B22 40%, #111820 100%)" }}
+        style={{ background: "rgba(12,28,46,0.85)" }}
       >
         <div className="flex items-center h-14 border-b border-vluma-border px-3 flex-shrink-0">
           <div className="flex items-center gap-2.5 flex-1 min-w-0">
@@ -119,7 +119,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       </aside>
 
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-        <header className="h-14 border-b border-vluma-border flex items-center justify-between px-4 flex-shrink-0">
+        <header className="h-14 border-b" style={{ borderColor: "rgba(255,255,255,0.07)", background: "rgba(6,16,28,0.8)" }} flex items-center justify-between px-4 flex-shrink-0">
           <div className="flex items-center gap-3">
             {collapsed && (
               <button onClick={() => setCollapsed(false)} className="text-vluma-muted hover:text-vluma-green transition-colors p-1.5 rounded-lg hover:bg-white/5" title="Expandir menu">
