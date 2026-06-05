@@ -11,7 +11,7 @@
   body {
     background: radial-gradient(ellipse at 70% 10%, #0d2a0d 0%, #0D1117 60%) fixed;
     @apply text-vluma-text font-sans antialiased;
-    background: radial-gradient(ellipse at 80% 0%, #0d2a0d 0%, #0D1117 50%) fixed;
+    
   }
   :root {
     --color-primary: #2ECC71;
@@ -54,4 +54,10 @@
   .pill-blue {
     @apply bg-blue-900 text-blue-200 text-xs font-medium px-2 py-1 rounded-full;
   }
+}
+
+html, body, #root {
+  min-height: 100vh;
+  background: radial-gradient(ellipse at 80% 0%, #0d2a0d 0%, #0D1117 50%) fixed;
+  background-attachment: fixed;
 }
