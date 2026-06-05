@@ -56,8 +56,8 @@
   }
 }
 
+
 html, body, #root {
   min-height: 100vh;
-  background: radial-gradient(ellipse at 80% 0%, #0d2a0d 0%, #0D1117 50%) fixed;
-  background-attachment: fixed;
+  background-color: #0f1f0f;
 }
